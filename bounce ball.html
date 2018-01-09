@@ -2,137 +2,186 @@
 	<head>
 		<title> Bounce Ball </title>
 		<script>
-		    var crtX = 30, crtY = 50, spd = 5, jmp = 0, grt = 0, getKey, goLR = 0, hitChk = 0, life = 3, game, death, crt, wall,
-		    halls = new Array(new Array(null, 400, 100));
-		    const crtR = 15, floorY = 500, Wx = 0, Wy = 500, Ww = 1500, Wh = 150;
+			var crtX = 30, crtY = 50, spd = 5, jmp = 0, grt = 0, getKey, goLR = 0, hitChk = 0, life = 3, playing = 0, game, death, crt, wall,
+			halls = new Array(new Array(null, 400, 100));
+			const crtR = 15, floorY = 500, Wx = 0, Wy = 500, Ww = 1500, Wh = 150;
+			window.onload = function() {
+				document.body.scrollLeft = 0;
 
-		    window.onload = function() {
-			document.body.scrollLeft = 0;
+				game = document.createElement('div');
 
-			game = document.createElement('div');
+				wall = document.createElement('img');
+				wall.src = '';
+				wall.width = Ww;
+				wall.height = Wh;
+				wall.setAttribute('style', 'background: #fff url(wall.png);');
+				wall.style.position = "absolute";
+				wall.style.left = 0 + 'px';
+				wall.style.top = Wy + 'px';
+				game.appendChild(wall);
 
-			wall = document.createElement('img');
-			wall.src = '';
-			wall.width = Ww;
-			wall.height = Wh;
-			wall.setAttribute('style', 'background: #fff url(wall.png);');
-			wall.style.position = "absolute";
-			wall.style.left = 0 + 'px';
-			wall.style.top = Wy + 'px';
-			game.appendChild(wall);
+				drawHalls();
 
-			drawHalls();
-
-			function drawHalls() {
-				for (var i = 0; i < halls.length; i++) {
-					halls[i][0] =  document.createElement('img');
-					halls[i][0].src = '';
-					halls[i][0].width = halls[i][2];
-					halls[i][0].height = 150;
-					halls[i][0].setAttribute('style', 'background: #000;');
-					halls[i][0].style.position = "absolute";
-					halls[i][0].style.left = halls[i][1] + 'px'; 
-					halls[i][0].style.top = Wy + 'px'; 
-					game.appendChild(halls[i][0]);
-				}
-			}
-
-			crt = document.createElement('img');
-			crt.src = 'ball.png';
-			crt.width = crt.height = crtR;
-			crt.style.position = "absolute";
-			draw();
-			game.appendChild(crt);
-			document.body.appendChild(game);
-
-			function draw() {
-				crt.style.left = crtX + 'px';
-				crt.style.top = crtY + 'px';
-			}
-
-			function jump() {
-				if (jmp == 0 && crtY < floorY) {
-					crtY += 10 + grt;
-					grt += 0.8;
-				}
-				if (jmp == 1) {
-					crtY -= 10 - grt;
-					grt += 0.8;
-				}
-				if (crtY >= (floorY - 15)) {
+				function drawHalls() {
 					for (var i = 0; i < halls.length; i++) {
-						if (halls[i][1] <= crtX && crtX <= halls[i][1] + halls[i][2] - crtR) {
-							hitChk = 1;
-							break;
+						halls[i][0] =  document.createElement('img');
+						halls[i][0].src = '';
+						halls[i][0].width = halls[i][2];
+						halls[i][0].height = 150;
+						halls[i][0].setAttribute('style', 'background: #000;');
+						halls[i][0].style.position = "absolute";
+						halls[i][0].style.left = halls[i][1] + 'px';
+						halls[i][0].style.top = Wy + 'px';
+						game.appendChild(halls[i][0]);
+					}
+				}
+
+				crt = document.createElement('img');
+				crt.src = 'ball.png';
+				crt.width = crt.height = crtR;
+				crt.style.position = "absolute";
+				draw();
+				game.appendChild(crt);
+
+				document.body.appendChild(game);
+
+				function draw() {
+					crt.style.left = crtX + 'px';
+					crt.style.top = crtY + 'px';
+				}
+
+				function jump() {
+					if (playing == 0) {
+						if (jmp == 0 && crtY < floorY) {
+							crtY += 10 + grt;
+							grt += 0.8;
+						}
+						if (jmp == 1) {
+							crtY -= 10 - grt;
+							grt += 0.8;
+						}
+						if (crtY >= (floorY - 15)) {
+							for (var i = 0; i < halls.length; i++) {
+								if (halls[i][1] <= crtX && crtX <= halls[i][1] + halls[i][2] - crtR) {
+									hitChk = 1;
+									break;
+								}
+							}
+							if (hitChk == 0) {
+								crtY = floorY - 15.1;
+								jmp = 1;
+								grt = 0;
+							} else if (crtY >= 600) {
+								gameOver();
+							}
 						}
 					}
-					if (hitChk == 0) {
-						crtY = floorY - 15.1;
-						jmp = 1;
-						grt = 0;
-					} else if (crtY >= 600) {
-						gameOver();
+				}
+
+				function move() {
+					if (hitChk == 0 && playing == 0) {
+						if (goLR == 1) {
+							crtX -= spd;
+						} else if (goLR == 2) {
+							crtX += spd;
+						}
+						if (crtX < 0) {
+							crtX = 0;
+						} else if (crtX > Ww - 15) {
+							crtX = Ww - 15;
+						}
+						if (crtX - document.body.scrollLeft >= 392.5) {
+							document.body.scrollLeft = crtX - 392.5;
+						} else if (crtX - document.body.scrollLeft < 392.5) {
+							document.body.scrollLeft = crtX - 392.5;
+						}
 					}
 				}
-			}
 
-			function move() {
-				if (hitChk == 0) {
-					if (goLR == 1) {
-						crtX -= spd;
-					} else if (goLR == 2) {
-						crtX += spd;
-					}
-					if (crtX < 0) {
-						crtX = 0;
-					} else if (crtX > Ww - 15) {
-						crtX = Ww - 15;
-					}
-					if (crtX - document.body.scrollLeft >= 392.5) {
-						document.body.scrollLeft = crtX - 392.5;
-					} else if (crtX - document.body.scrollLeft < 392.5) {
-						document.body.scrollLeft = crtX - 392.5;
+				function gameOver() {
+					if (life > 0) {
+						playing = 1;
+						hitChk = 0;
+						goLR = 0;
+						crtX = 30;
+						crtY = 50;
+						death = document.createElement('div');
+						document.body.scrollLeft = 0;
+						death.innerHTML = '<center><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><font color="white" size="24">Life : ' + (--life) + '</font></center>';
+						game.setAttribute('style', 'visibility: hidden;');
+						document.body.appendChild(death);
+						setTimeout(function() {
+							document.body.removeChild(death);
+							game.setAttribute('style', 'visibility: visible;');
+							playing = 0;
+						}, 2000);
 					}
 				}
-			}
 
-			function gameOver() {
-				if (life > 0) {
-					hitChk = 0;
-					crtX = 30;
-					crtY = 50;
-					death = document.createElement('div');
-					death.innerHTML = '<center><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><font color="white" size="24">Life : ' + (--life) + '</font></center>';
-					game.setAttribute('style', 'visibility: hidden;');
-					document.body.appendChild(death);
-					setTimeout(function() {
-						document.body.removeChild(death);
-						game.setAttribute('style', 'visibility: visible;');
-					}, 2000);
+				var chk = document.createElement('img');
+				chk.src = 'ball.png';
+				chk.width = 400;
+				chk.height = 150;
+				chk.style.position = "absolute";
+				chk.style.left = 0;
+				chk.style.top = 500;
+
+				function hitChck() {
+					alert(hitTest(crt, chk));
 				}
-			}
 
-			function getKeyValue() {
-				getKey = event.keyCode;
-				if (getKey == "65") {
-					goLR = 1;
-				} else if (getKey == "68") {
-					goLR = 2;
-				} else if (getKey == "83") {
-					goLR = 0;
+				function hitTest(ori, tar) {
+					var oriX, oriY, oriW, oriH, tarX, tarY, tarW, tarH, varTB = 0, varLR = 0;
+					oriX = Number((ori.style.left).replace('px',''));
+					oriY = Number((ori.style.top).replace('px',''));
+					oriW = ori.style.width;
+					oriH = ori.style.height;
+					tarX = Number((tar.style.left).replace('px',''));
+					tarY = Number((tar.style.top).replace('px',''));
+					tarW = tar.style.width;
+					tarH = tar.style.height;
+
+					if ((oriY >= tarY && oriY <= tarY + tarH) || (oriY + oriH >= tarY && oriY + oriH <= tarY + tarH)) {
+						if (oriX + oriW >= tarX && oriX + oriW <= tarX + (tarW / 2)) 
+							valLR = 1;
+						else if (oriX >= tarX + (tarW / 2) && oriX <= tarX + tarW) 
+							valLR = 2;
+					}
+					if ((oriX >= tarX && oriX <= tarX + tarW) || (oriX + oriW >= tarX && oriX + oriW <= tarX + tarW)) {
+						if (oriY + oriH >= tarY && oriY + oriH <= tarY + (tarH / 2))
+							valTB = 1;
+						else if (oriY >= tarY + (tarH / 2) && oriY <= tarY + tarH)
+							valTB = 2;
+					}
+
+					return valLR + "/" + valTB;
 				}
+
+				function getKeyValue() {
+					getKey = event.keyCode;
+					if (playing == 0) {
+						if (getKey == "65") {
+							goLR = 1;
+						} else if (getKey == "68") {
+							goLR = 2;
+						} else if (getKey == "83") {
+							goLR = 0;
+						}
+					}
+				}
+
+				document.onkeydown = getKeyValue;
+
+				setInterval(function() {
+					jump();
+					move();
+					draw();
+					hitChck();
+				}, 1000/60);
 			}
-
-			document.onkeydown = getKeyValue;
-
-			setInterval(function() {
-				jump();
-				move();
-				draw();
-			}, 1000/60);
-		    }
 		</script>
 	</head>
-	<body bgcolor="black">
+	<body bgcolor="black" oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
+		
 	</body>
 </html>
