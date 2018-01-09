@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title> Bounce Ball </title>
-		<script>
+		<script>//halls -> walls로 교체, wall,hitChk,floorY 제거, hitChck를 통해 이벤트 처리 할 것
 			var crtX = 30, crtY = 50, spd = 5, jmp = 0, grt = 0, getKey, goLR = 0, hitChk = 0, life = 3, playing = 0, game, death, crt, wall,
 			halls = new Array(new Array(null, 400, 100));
 			const crtR = 15, floorY = 500, Wx = 0, Wy = 500, Ww = 1500, Wh = 150;
@@ -61,7 +61,7 @@
 							grt += 0.8;
 						}
 						if (crtY >= (floorY - 15)) {
-							for (var i = 0; i < halls.length; i++) {
+							/*for (var i = 0; i < halls.length; i++) {
 								if (halls[i][1] <= crtX && crtX <= halls[i][1] + halls[i][2] - crtR) {
 									hitChk = 1;
 									break;
@@ -73,7 +73,7 @@
 								grt = 0;
 							} else if (crtY >= 600) {
 								gameOver();
-							}
+							}*/
 						}
 					}
 				}
@@ -106,10 +106,10 @@
 						crtX = 30;
 						crtY = 50;
 						death = document.createElement('div');
-						document.body.scrollLeft = 0;
 						death.innerHTML = '<center><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><font color="white" size="24">Life : ' + (--life) + '</font></center>';
 						game.setAttribute('style', 'visibility: hidden;');
 						document.body.appendChild(death);
+						document.body.scrollLeft = 0;
 						setTimeout(function() {
 							document.body.removeChild(death);
 							game.setAttribute('style', 'visibility: visible;');
@@ -118,43 +118,46 @@
 					}
 				}
 
-				var chk = document.createElement('img');
-				chk.src = 'ball.png';
-				chk.width = 400;
-				chk.height = 150;
-				chk.style.position = "absolute";
-				chk.style.left = 0;
-				chk.style.top = 500;
-
-				function hitChck() {
-					alert(hitTest(crt, chk));
-				}
-
 				function hitTest(ori, tar) {
-					var oriX, oriY, oriW, oriH, tarX, tarY, tarW, tarH, varTB = 0, varLR = 0;
+					var oriX, oriY, oriW, oriH, tarX, tarY, tarW, tarH, valTB = 0, valLR = 0;
 					oriX = Number((ori.style.left).replace('px',''));
 					oriY = Number((ori.style.top).replace('px',''));
-					oriW = ori.style.width;
-					oriH = ori.style.height;
+					oriW = ori.width;
+					oriH = ori.height;
 					tarX = Number((tar.style.left).replace('px',''));
 					tarY = Number((tar.style.top).replace('px',''));
-					tarW = tar.style.width;
-					tarH = tar.style.height;
-
+					tarW = tar.width;
+					tarH = tar.height;
+					console.log(oriX + "/" + oriY + "/" + oriW + "/" + oriH + "\n" + tarX + "/" + tarY + "/" + tarW + "/" + tarH);
+					console.log("-----------chk start-----------");
 					if ((oriY >= tarY && oriY <= tarY + tarH) || (oriY + oriH >= tarY && oriY + oriH <= tarY + tarH)) {
-						if (oriX + oriW >= tarX && oriX + oriW <= tarX + (tarW / 2)) 
+						console.log("chk LR true");
+						if (oriX + oriW >= tarX && oriX + oriW <= tarX + (tarW / 2)) {
+							console.log("chk LR 1");
 							valLR = 1;
-						else if (oriX >= tarX + (tarW / 2) && oriX <= tarX + tarW) 
+						}
+						else if (oriX >= tarX + (tarW / 2) && oriX <= tarX + tarW) {
+							console.log("chk LR 2");
 							valLR = 2;
+						}
 					}
 					if ((oriX >= tarX && oriX <= tarX + tarW) || (oriX + oriW >= tarX && oriX + oriW <= tarX + tarW)) {
-						if (oriY + oriH >= tarY && oriY + oriH <= tarY + (tarH / 2))
+						console.log("chk TB true");
+						if (oriY + oriH >= tarY && oriY + oriH <= tarY + (tarH / 2)) {
+							console.log("chk TB 1");
 							valTB = 1;
-						else if (oriY >= tarY + (tarH / 2) && oriY <= tarY + tarH)
+						}
+						else if (oriY >= tarY + (tarH / 2) && oriY <= tarY + tarH) {
+							console.log("chk TB 2");
 							valTB = 2;
+						}
 					}
-
 					return valLR + "/" + valTB;
+				}
+
+				function hitChck() {
+					console.log(hitTest(crt, wall));
+					console.log("-----------chk end-----------");
 				}
 
 				function getKeyValue() {
@@ -177,7 +180,7 @@
 					move();
 					draw();
 					hitChck();
-				}, 1000/60);
+				}, 1000/30);
 			}
 		</script>
 	</head>
