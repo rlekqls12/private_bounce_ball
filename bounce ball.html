@@ -2,7 +2,7 @@
 	<head>
 		<title> Bounce Ball </title>
 		<script>
-			var crtX = 30, crtY = 50, spd = 5, jmp = 0, gra = 0, getKey, goLR = 0, hitV, life = 3, playing = 0, game, death, crt, i,
+			var crtX = 30, crtY = 50, spd = 5, jmp = 0, gra = 0, getKey, goLR = 0, hitV, life = 3, playing = 0, game, death, crt, i, prevX, prevY, prevUX, prevUY, prevChk, prevNum = 50;
 			walls = new Array(new Array(null, 0, 500, 500, 150), new Array(null, 600, 500, 500, 150), new Array(null, 400, 380, 50, 50), new Array(null, 300, 400, 50, 100));
 			const crtR = 15, roundW = 1100;
 			window.onload = function() {
@@ -120,36 +120,43 @@
 
 				function hitChk() {
 					if (playing == 0) {
-						if (jmp == 0) {
-							crtY += 10 + gra;
-							gra += 0.8;
-						}
-						if (jmp == 1) {
-							crtY -= 10 - gra;
-							gra += 0.8;
-						}
-						if (crtY >= 650) 
-							gameOver();
-
 						for (i = 0; i < walls.length; i++) {
 							hitV = hitTest(crt, walls[i][0]);
 							if (hitV.split("/")[1] == 1) {
 								crtY = walls[i][2] - (crtR + 0.1);
 								jmp = 1;
 								gra = 0;
+								return true;
 							} else if (hitV.split("/")[1] == 2) {
 								crtY = walls[i][2] + walls[i][4];
 								jmp = 0;
 								gra = 0;
+								return true;
 							} else if (hitV.split("/")[0] == 1) {
 								goLR = 0;
 								crtX = walls[i][1] - crtR;
+								return true;
 							} else if (hitV.split("/")[0] == 2) {
 								goLR = 0;
 								crtX = walls[i][1] + walls[i][3];
+								return true;
 							}
 						}
 					}
+					return false;
+				}
+
+				function jump() {
+					if (jmp == 0) {
+						crtY += 10 + gra;
+						gra += 0.8;
+					}
+					if (jmp == 1) {
+						crtY -= 10 - gra;
+						gra += 0.8;
+					}
+					if (crtY >= 650) 
+						gameOver();
 				}
 
 				function getKeyValue() {
@@ -168,10 +175,29 @@
 				document.onkeydown = getKeyValue;
 
 				setInterval(function() {
-					move();
-					hitChk();
-					draw();
-				}, 1000/60);
+					if (prevNum >= 50) {
+						prevX = crtX;
+						prevY = crtY;
+						prevNum = 0;
+						move();
+						jump();
+						hitChk();
+						prevUX = (crtX - prevX)/50;
+						prevUY = (crtY - prevY)/50;
+						crtX = prevX;
+						crtY = prevY;
+						prevChk = setInterval(function() {
+							if (prevNum >= 50)
+								clearInterval(prevChk);
+							crtX += prevUX;
+							crtY += prevUY;
+							if (hitChk() == true)
+								prevNum = 50;
+							draw();
+							prevNum++;
+						}, 1000/60000);
+					}
+				}, 1000/6000);
 			}
 		</script>
 	</head>
