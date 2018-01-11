@@ -7,7 +7,7 @@
 			walls = new Array(new Array(null, 0, 500, 300, 150),
 					new Array(null, 400, 500, 500, 150),
 					new Array(null, 1000, 500, 200, 150));
-			const crtR = 15, roundW = 1200, flagX = roundW - 25, flagY = 475;
+			const crtR = 15, roundW = 1200, flagX = roundW - 1175, flagY = 450;
 			window.onload = function() {
 				document.body.scrollLeft = 0;
 
@@ -31,7 +31,7 @@
 
 				flag = document.createElement('img');
 				flag.src = 'flag.png';
-				flag.width = flag.height = 25;
+				flag.width = flag.height = 50;
 				flag.style.position = "absolute";
 				flag.style.left = flagX + 'px';
 				flag.style.top = flagY + 'px';
@@ -40,6 +40,8 @@
 				crt = document.createElement('img');
 				crt.src = 'ball.png';
 				crt.width = crt.height = crtR;
+				//crt.style.filter = 'chroma(color=black)';
+				//crt.setAttribute('style','filter: chroma(color=black)'); ¾ÈµÊ..
 				crt.style.position = "absolute";
 				draw();
 				game.appendChild(crt);
